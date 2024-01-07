@@ -11,7 +11,7 @@ const CustomLoader = () => {
         color="#3f51b5"
         height={100}
         width={100}
-        timeout={3000} // Opcjonalne - czas, po którym loader zakończy działanie (w ms)
+        timeout={3000}
       />
     </div>
   );

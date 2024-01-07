@@ -21,8 +21,8 @@ class App extends Component {
   };
 
   fetchImages = () => {
-    const { query, page } = this.state;
-    const API_KEY = '38858109-c828e4419821e6c1b097414a2';
+    const { query } = this.state;
+    // const API_KEY = '38858109-c828e4419821e6c1b097414a2';
 
     this.setState({ isLoading: true });
 
