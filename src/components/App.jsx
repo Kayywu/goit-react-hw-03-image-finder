@@ -13,68 +13,53 @@ class App extends Component {
     largeImageUrl: '', // Tutaj będzie przechowywany adres URL dużego obrazka do modala
     alt: '', // Tutaj będzie przechowywany alternatywny tekst obrazka do modala
     page: 1, // Numer strony wyników wyszukiwania (dla paginacji)
-    isLoading: false, // Flaga wskazująca, czy trwa ładowanie kolejnych obrazków
     showModal: false, // Flaga wskazująca, czy modal powinien być widoczny
   };
 
-  handleSubmit = async query => {
-    this.setState({ isLoading: true, page: 1});
-  };
+  componentDidUpdate(prevProps, prevState) {
+    const { page, query } = this.state;
 
- /* fetchImages = () => { //
-    const { query } = this.state; 
-    const API_KEY = '38858109-c828e4419821e6c1b097414a2'; */
+    if (prevState.page !== page || prevState.query !== query) {
+      this.fetchImages();
+    }
+  }
 
-   /* this.setState({ isLoading: true }); */
+ fetchImages = async () => { 
+    const { page, query } = this.state;
 
-   try {
-    const images = await fetch(query, 1);
-    this.setState({ images, query });
-   } catch (error) {
-    console.log(error);
-   } finally {
-    this.setState(prev => {
-      return { page: prev.page + 1, isLoading: false};
-    });
-   }
+  /* this.setState({ isLoading: true }); */
+
+  try {
+    const newImages = await Api.fetchImages(query, page);
+    this.setState((prevState) => ({
+      images: [...prevState.images, ...newImages],
+      page: prevState.page + 1,
+    }));
+  } catch (error) {
+    console.error('Error', error);
+  } finally {
+    this.setState({ isLoading: false });
+  }
 };
 
- handleLoadMore = async () => {
-  this.setState({ idLoadingL true });
- }
-;
+  handleSubmit = (query) => {
+    this.setState({ query, page: 1, images: [] }, this.fetchImages);
+  } 
 
-try {
-  const newImages = await fetch(
-    this.state.query,
-    this.state.page
-  );
-  this.setState(prev => {
-    return {
-      images: [...prev.images, ...newImages],
+  /*handleSubmit = async (query) => {
+    try {
+      const images = await Api.fetchImages(query, 1);
+      this.setState({ images, query });
+    } catch (error) {
+      console.error('Error fetching images:', error);
     }
-  });
-} catch (error) {
-  console.log(error);
-} finally {
-  this.setState(prev => {
-    return { page: prev.page +1, isLoading: false}
-  })
-}
-
-    /* fetch(
-      `https://pixabay.com/api/?q=${query}&page=${query}&key=38858109-c828e4419821e6c1b097414a2&image_type=photo&orientation=horizontal&per_page=12`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState((prevState) => ({
-          images: [...prevState.images, ...data.hits],
-          page: prevState.page + 1,
-        }));
-      })
-      .catch((error) => console.error('Error fetching images:', error))
-      .finally(() => this.setState({ isLoading: false }));
   }; */
+  
+
+  handleLoadMore = async () => {
+    this.setState({ isLoading: true });
+    await this.fetchImages();
+  }
 
   openModal = (largeImageUrl, alt) => {
     this.setState({ largeImageUrl, alt, showModal: true });
@@ -102,7 +87,7 @@ try {
         </ImageGallery>
         {isLoading && <h2>Loading...</h2>}
         {images.length > 0 && !isLoading && (
-          <Button onClick={this.fetchImages} />
+          <Button onClick={this.handleLoadMore} />
         )}
         {showModal && (
           <Modal
@@ -113,8 +98,7 @@ try {
         )}
       </div>
     );
-  }
-
+  }}
 
 export default App;
 
