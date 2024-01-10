@@ -26,40 +26,28 @@ class App extends Component {
 
  fetchImages = async () => { 
     const { page, query } = this.state;
+ 
 
-  /* this.setState({ isLoading: true }); */
-
-  try {
+ try {
     const newImages = await Api.fetchImages(query, page);
     this.setState((prevState) => ({
       images: [...prevState.images, ...newImages],
-      page: prevState.page + 1,
     }));
   } catch (error) {
     console.error('Error', error);
   } finally {
     this.setState({ isLoading: false });
-  }
-};
+  } 
+}; 
 
   handleSubmit = (query) => {
-    this.setState({ query, page: 1, images: [] }, this.fetchImages);
+    this.setState({ query, page: 1, images: [] });
   } 
-
-  /*handleSubmit = async (query) => {
-    try {
-      const images = await Api.fetchImages(query, 1);
-      this.setState({ images, query });
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  }; */
   
 
   handleLoadMore = async () => {
-    this.setState({ isLoading: true });
-    await this.fetchImages();
-  }
+    this.setState(ps => ({ isLoading: true, page: ps.page + 1 }));
+  };
 
   openModal = (largeImageUrl, alt) => {
     this.setState({ largeImageUrl, alt, showModal: true });
@@ -98,7 +86,7 @@ class App extends Component {
         )}
       </div>
     );
-  }}
+        }}
 
 export default App;
 
